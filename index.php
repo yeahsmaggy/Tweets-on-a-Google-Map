@@ -1,6 +1,6 @@
-<?php
-error_reporting( E_ALL );
-ini_set( 'display_errors', 1 );
+<?php session_start();
+// error_reporting( E_ALL );
+// ini_set( 'display_errors', 1 );
 require "vendor/autoload.php";
 
 use Abraham\TwitterOAuth\TwitterOAuth;
@@ -8,10 +8,37 @@ use Abraham\TwitterOAuth\TwitterOAuth;
 
 define( 'CONSUMER_KEY', 'NuYKWQHENes40tocqnmYNjhq4' );
 define( 'CONSUMER_SECRET', '1TIlkzlSs3VVZ2G5zpijIfU7p9WNbQOc4c66EjRfTwz7AVg38F' );
+
+//localhost doesn't work  as a callback in the apps.twitter.com site, use 127.0.0.1 instead
 define( 'OAUTH_CALLBACK', 'http://127.0.0.1/tweetmap_whitelabel/' );
 
 
-$connection = new TwitterOAuth( CONSUMER_KEY, CONSUMER_SECRET );
+
+if ( isset( $_REQUEST['oauth_verifier'] ) ) {
+
+
+    $request_token = [];
+    $request_token['oauth_token'] = $_SESSION['oauth_token'];
+    $request_token['oauth_token_secret'] = $_SESSION['oauth_token_secret'];
+
+
+    if ( isset( $_REQUEST['oauth_token'] ) && $request_token['oauth_token'] !== $_REQUEST['oauth_token'] ) {
+      // Abort! Something is wrong.
+    }
+
+
+    $connection = new TwitterOAuth( CONSUMER_KEY, CONSUMER_SECRET, $request_token['oauth_token'], $request_token['oauth_token_secret'] );
+    $access_token = $connection->oauth( "oauth/access_token", ["oauth_verifier" => $_REQUEST['oauth_verifier']] );
+
+
+    $_SESSION['access_token'] = $access_token;
+
+
+    print_r($_SESSION);
+
+}else {
+
+  $connection = new TwitterOAuth( CONSUMER_KEY, CONSUMER_SECRET );
 
   //ok so you only get this once. Its a temporary key.. (thats why we put it in a session)
   //this must be unique each time you do the initial request to get back the oauth_token and oauth_verifier
@@ -30,100 +57,12 @@ $connection = new TwitterOAuth( CONSUMER_KEY, CONSUMER_SECRET );
   // print_r(  $_SESSION )  . '<br><br>';
 
 
-
-
   $url = $connection->url( 'oauth/authorize', array( 'oauth_token' => $request_token['oauth_token'] ) );
   echo '<br><br><a class="btn btn-primary" href="' . $url .  '">Next step: authorize on twitter.com</a>';
 
 
 
-$request_token = [];
-$request_token['oauth_token'] = $_SESSION['oauth_token'];
-$request_token['oauth_token_secret'] = $_SESSION['oauth_token_secret'];
-
-
-
-if (isset($_GET['oauth_token']) && $request_token['oauth_token'] !== $_GET['oauth_token']) {
-    // Abort! Something is wrong.
 }
-
-
-
-
-$connection = new TwitterOAuth(CONSUMER_KEY, CONSUMER_SECRET, $request_token['oauth_token'], $request_token['oauth_token_secret']);
-
-print_r($connection);
-
-die;
-
-$access_token = $connection->oauth("oauth/access_token", ["oauth_verifier" => $_GET['oauth_verifier']]);
-
-// print_r($access_token);
-
-
-
-
-
-
-die;
-
-
-
-// error_reporting( E_ALL );
-// ini_set( 'display_errors', 1 );
-
-// include 'eden.php';
-// eden()->setLoader();
-
-// //Instantiate Auth
-// $auth = eden( 'twitter' )->auth( 'EWFFAW4hohsfgorQbHYKg', '2WBB5VpE8P4fQWzSDW87BkbRowbH27OCSy3dZgKM' );
-
-// //Authentication
-//  session_start();
-
-// //if we have no access token
-// if(!isset($_SESSION['access_token'], $_SESSION['access_secret'])) {
-//   //if we do not have the request secret
-//   if(!isset($_SESSION['request_secret'])) {
-//       //we are still in the middle of authenticating
-//       //get the request token from twitter
-//       $token = $auth->getRequestToken();
-
-
-//       //and store it in a session
-//       $_SESSION['request_secret'] = $token['oauth_token_secret'];
-//       //with the request token we can form a login URL the
-//       //user will need to go to inorder to complete the authenication process
-//       $login = $auth->getLoginUrl($token['oauth_token'], 'http://yourwebsite.com/auth');
-//       header('Location:'.$login);
-//       exit;
-//   }
-
-//   //either way we should have a request secret at this point
-//   //at this point the user has already authorize our app
-//   //if we got something back in a URL query
-//   if(isset($_GET['oauth_token'], $_GET['oauth_verifier'])) {
-//       //we need to convert that to an access token
-//       $token = $auth->getAccessToken($_GET['oauth_token'], $_SESSION['request_secret'], $_GET['oauth_verifier']);
-//       //lastly, save the token in session
-//       $_SESSION['access_token']   = $token['oauth_token'];
-//       $_SESSION['access_secret']  = $token['oauth_token_secret'];
-//       //clean up
-//       unset($_SESSION['request_secret']);
-//   }
-// }
-
-// echo '<pre>';
-// print_r($_SESSION);
-// echo '</pre>';
-
-// $timeline = eden( 'twitter' )->timeline( 'EWFFAW4hohsfgorQbHYKg', '2WBB5VpE8P4fQWzSDW87BkbRowbH27OCSy3dZgKM', $_SESSION['access_token'], $_SESSION['access_secret'] );
-
-// $timeline->setCount( 50 );
-
-// $timeline = $timeline->getUserTimelines( 'andrewwelch5' );
-
-// $tweets = eden( 'twitter' )->tweets( 'EWFFAW4hohsfgorQbHYKg', '2WBB5VpE8P4fQWzSDW87BkbRowbH27OCSy3dZgKM', $_SESSION['access_token'], $_SESSION['access_secret'] );
 ?>
 
 

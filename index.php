@@ -2,12 +2,16 @@
 // error_reporting( E_ALL );
 // ini_set( 'display_errors', 1 );
 require "vendor/autoload.php";
-
 use Abraham\TwitterOAuth\TwitterOAuth;
 
 
-define( 'CONSUMER_KEY', 'NuYKWQHENes40tocqnmYNjhq4' );
-define( 'CONSUMER_SECRET', '1TIlkzlSs3VVZ2G5zpijIfU7p9WNbQOc4c66EjRfTwz7AVg38F' );
+$dotenv = new Dotenv\Dotenv(__DIR__);
+$dotenv->load();
+
+
+
+define( 'CONSUMER_KEY', getenv('CONSUMER_KEY'));
+define( 'CONSUMER_SECRET', getenv('CONSUMER_SECRET'));
 
 //localhost doesn't work  as a callback in the apps.twitter.com site, use 127.0.0.1 instead
 define( 'OAUTH_CALLBACK', 'http://127.0.0.1/tweetmap_whitelabel/' );
@@ -28,13 +32,19 @@ if ( isset( $_REQUEST['oauth_verifier'] ) ) {
 
 
     $connection = new TwitterOAuth( CONSUMER_KEY, CONSUMER_SECRET, $request_token['oauth_token'], $request_token['oauth_token_secret'] );
-    $access_token = $connection->oauth( "oauth/access_token", ["oauth_verifier" => $_REQUEST['oauth_verifier']] );
 
+    $access_token = $connection->oauth( "oauth/access_token", ["oauth_verifier" => $_REQUEST['oauth_verifier']] );
 
     $_SESSION['access_token'] = $access_token;
 
 
-    print_r($_SESSION);
+    $access_token = $_SESSION['access_token'];
+
+    $connection = new TwitterOAuth(CONSUMER_KEY, CONSUMER_SECRET, $access_token['oauth_token'], $access_token['oauth_token_secret']);
+
+    $user = $connection->get("account/verify_credentials");
+    $timeline = $connection->get("statuses/home_timeline", ["count" => 25, "exclude_replies" => true]);
+
 
 }else {
 
@@ -63,6 +73,11 @@ if ( isset( $_REQUEST['oauth_verifier'] ) ) {
 
 
 }
+
+
+
+
+
 ?>
 
 
@@ -84,11 +99,6 @@ if ( isset( $_REQUEST['oauth_verifier'] ) ) {
 <script type="text/javascript" src="js/soundmanager2.js"></script>
 <script type="text/javascript" src="js/oms.min.js"></script>
 <script>
-// soundManager.setup({
-//   url: 'swf/',
-//   debugMode: true
-//   // preferFlash: false,
-// });
 
 
 var map;
@@ -102,10 +112,10 @@ function initialize() {
 var mapOptions = {
   zoom: 10,
   <?php
-if ( isset( $timeline[0]['geo']['coordinates'] ) ) {
-  $current_lat = $timeline[0]['geo']['coordinates'][0];
-  $current_long = $timeline[0]['geo']['coordinates'][1];
-}
+// if ( isset( $timeline[0]['geo']['coordinates'] ) ) {
+//   $current_lat = $timeline[0]['geo']['coordinates'][0];
+//   $current_long = $timeline[0]['geo']['coordinates'][1];
+// }
 ?>
   center: new google.maps.LatLng(<?php
 /*(isset($current_lat)) ? print $current_lat :*/

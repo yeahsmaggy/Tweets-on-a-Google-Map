@@ -1,5 +1,0 @@
-{"access_token" : "316373513-8Gl2YbuVn0Zu5tck9phpRGgpAVAFqLAzudDlaW1r",
-"oauth_token" : "qqWyDq6XJtGsbcI5xRlrIDs5z95F5U5hAIARAG3HtMU",
-"oauth_verifier" : "tUQwXk0gsbKdMBcKpEzngZE7o68t0TIjB7rqmSY9sI",
-"access_secret" : "UNkFdpx5WueGS5qQVDB5c9ASRwbUp4GgTo5m5HFC4zgTG"
-}

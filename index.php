@@ -43,8 +43,22 @@ if ( isset( $_REQUEST['oauth_verifier'] ) ) {
     $connection = new TwitterOAuth(CONSUMER_KEY, CONSUMER_SECRET, $access_token['oauth_token'], $access_token['oauth_token_secret']);
 
     $user = $connection->get("account/verify_credentials");
-    $timeline = $connection->get("statuses/home_timeline", ["count" => 25, "exclude_replies" => true]);
+    $timeline = $connection->get("statuses/user_timeline", ["count" => 5, "exclude_replies" => true]);
 
+    $markers = [];
+    foreach($timeline as $item){      
+      $geo = $item->geo;
+      print_r($geo);
+
+
+       $markers[] = array(
+        'Title'=>'Title','Desc'=>'',  'Lat'=> $geo['coordinates'][0], 'Long'=> $geo['coordinates'][1],'Image'=>'',
+        );
+        
+        
+
+
+    }
 
 }else {
 
@@ -108,25 +122,34 @@ maxWidth: 200
 
 
 function initialize() {
-//Start mapoptions
 var mapOptions = {
   zoom: 10,
+
   <?php
+
 // if ( isset( $timeline[0]['geo']['coordinates'] ) ) {
 //   $current_lat = $timeline[0]['geo']['coordinates'][0];
 //   $current_long = $timeline[0]['geo']['coordinates'][1];
 // }
+
 ?>
-  center: new google.maps.LatLng(<?php
-/*(isset($current_lat)) ? print $current_lat :*/
-print '37.68235356';
-?>, <?php
-/*(isset($current_long)) ? print $current_long :*/
-print '-1.68476679';
-?>),
-  //'Lat'   : '37.68235356', 'Long'   : '-1.68476679',
-  mapTypeId: google.maps.MapTypeId.HYBRID
+
+center: new google.maps.LatLng(
+<?php
+(isset($current_lat)) ? print $current_lat : print '37.68235356';?>,<?php (isset($current_long)) ? print $current_long : print '-1.68476679'; 
+?>
+),
+ mapTypeId: google.maps.MapTypeId.HYBRID
 };
+
+
+
+<?php $js_array = json_encode($markers);
+echo "var myMarkers = ". $js_array . ";\n";
+
+die;
+?>
+
 
 
 //createmap
@@ -134,7 +157,12 @@ map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
 //make a new marker with a title this could be an array and position could be lat longs from array
 var oms = new OverlappingMarkerSpiderfier(map);
 
-var myMarkers = new Array();
+
+
+
+
+console.log(myMarkers);
+
 
 for (var i = 0; i < myMarkers.length; i++) {
   var marker = new google.maps.Marker({
@@ -145,11 +173,15 @@ for (var i = 0; i < myMarkers.length; i++) {
   marker.setTitle((i + 1).toString());
   attachInfo(marker, i, myMarkers[i]['Title'], myMarkers[i]['Desc'], myMarkers[i]['audioFileName'], myMarkers[i]['Image']);
 };
+
+
 function getInfoWindowEvent(marker, message) {
   infowindow.close()
   infowindow.setContent(message);
   infowindow.open(map, marker);
 }
+
+
 function attachInfo(marker, num, title, desc, audioFileName, image) {
   var message = '<h3 style="padding:0px; margin:0px;">' + title + '</h3>' + '<br/>' + desc + '<br/>' + '<a target="_blank" href="' + image + '"><img style="width:200px;" src="' + image + '"/></a>';
   google.maps.event.addListener(marker, 'click', function () {
@@ -163,34 +195,48 @@ function attachInfo(marker, num, title, desc, audioFileName, image) {
 }
 }
 google.maps.event.addDomListener(window, 'load', initialize);
-$(function() {
-$.ajax({
-type: "GET",
-//url: "http://localhost:8888/tweetmap/join.gpx",
-url: "http://www.andrewwelch.info/bajadamap/join.gpx",
-dataType: "xml",
-success: function(xml) {
-var points = [];
-var bounds = new google.maps.LatLngBounds ();
-$(xml).find("trkpt").each(function() {
-  var lat = $(this).attr("lat");
-  var lon = $(this).attr("lon");
-  var p = new google.maps.LatLng(lat, lon);
-  points.push(p);
-  bounds.extend(p);
-});
-var poly = new google.maps.Polyline({
-  path: points,
-  strokeColor: "#FF00AA",
-  strokeOpacity: .7,
-  strokeWeight: 4
-});
 
-poly.setMap(map);
-map.fitBounds(bounds);
-}
-});
-});
+
+
+      $(function() {
+
+        $.ajax({
+          type: "GET",
+          //url: "http://localhost:8888/tweetmap/join.gpx",
+          url: "http://www.andrewwelch.info/bajadamap/join.gpx",
+          dataType: "xml",
+
+          success: function(xml) {
+
+            var points = [];
+
+            var bounds = new google.maps.LatLngBounds ();
+              $(xml).find("trkpt").each(function() {
+                var lat = $(this).attr("lat");
+                var lon = $(this).attr("lon");
+                var p = new google.maps.LatLng(lat, lon);
+                points.push(p);
+                bounds.extend(p);
+              });
+
+            var poly = new google.maps.Polyline({
+              path: points,
+              strokeColor: "#FF00AA",
+              strokeOpacity: .7,
+              strokeWeight: 4
+            });
+
+            poly.setMap(map);
+            map.fitBounds(bounds);
+
+          }
+        });
+      });
+
+
+
+
+
   </script>
 </head>
 <body>

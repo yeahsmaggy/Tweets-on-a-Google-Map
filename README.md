@@ -4,6 +4,10 @@
 
 - Twitter CONSUMER_KEY, CONSUMER_SECRET
 
+## Notes
+
+Uses https://github.com/abraham/twitteroauth
+
 ## Install
 
 - git clone

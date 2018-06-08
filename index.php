@@ -33,13 +33,8 @@ if ( isset( $_REQUEST['oauth_verifier'] ) ) {
   //ok so you only get this once. Its a temporary key.. (thats why we put it in a session)
   //this must be unique each time you do the initial request to get back the oauth_token and oauth_verifier
   $request_token = $connection->oauth( 'oauth/request_token', array( 'oauth_callback' => OAUTH_CALLBACK ) );
-  // print 'Request token: -----  <br><br>';
-  // print_r( $request_token ) . '<br><br>';
-  // echo 'oauth token:'. $request_token['oauth_token'] . '<br>';
   $_SESSION['oauth_token'] = $request_token['oauth_token'];
   $_SESSION['oauth_token_secret'] = $request_token['oauth_token_secret'];
-  // print '<br><br>Session: -----<br><br>';
-  // print_r(  $_SESSION )  . '<br><br>';
   $url = $connection->url( 'oauth/authorize', array( 'oauth_token' => $request_token['oauth_token'] ) );
   echo '<br><br><a class="btn btn-primary" href="' . $url .  '">Next step: authorize on twitter.com</a>';
 }
@@ -116,8 +111,7 @@ google.maps.event.addDomListener(window, 'load', initialize)
       $(function() {
         $.ajax({
           type: "GET",
-          //url: "http://localhost:8888/tweetmap/join.gpx",
-          url: "http://www.andrewwelch.info/bajadamap/join.gpx",
+          url: "/join.gpx",
           dataType: "xml",
           success: function(xml) {
             var points = [];

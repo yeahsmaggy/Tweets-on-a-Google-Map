@@ -1,8 +1,8 @@
 # Tweets-on-a-Google-Map
 
-I did a walk around the Rustafa district in Valencia, taking photos with my DSLR (Nikon D40x). This camera doesn't have geolocation facility for the images, so for each image I also recorded a waypoint with my Etrex Vista HCX GPS device. 
+I did a walk around the Rustafa district in Valencia, taking photos with my DSLR (Nikon D40x). This camera doesn't have geolocation facility for the images, so for each image I also recorded a waypoint with my Etrex Vista HCX GPS device and I tweeted about the location. 
 
-I combined this data together and then wanted to show the photos geolocated on the google map with an infomarker displaying the image, title and info about the image. 
+I combined this data together and then wanted to show the photos geolocated on the google map with an infomarker displaying the image, title and info about the image. I also may have done something with an audiofile but I don't remember the implementation.
 
 ## Prerequisite
 

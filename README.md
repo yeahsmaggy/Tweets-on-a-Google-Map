@@ -1,4 +1,4 @@
-# Tweets-on-a-Google-Map
+# Geolocated images on a google map
 
 I did a walk around the Rustafa district in Valencia, taking photos with my DSLR (Nikon D40x). This camera doesn't have geolocation facility for the images, so for each image I also recorded a waypoint with my Etrex Vista HCX GPS device and I tweeted about the location. 
 

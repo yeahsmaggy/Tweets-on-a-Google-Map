@@ -9,3 +9,5 @@
 - git clone
 - cd into directory
 - composer install
+- create a .env file in the root
+- add CONSUMER_KEY, CONSUMER_SECRET to it

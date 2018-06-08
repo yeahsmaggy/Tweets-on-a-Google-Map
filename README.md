@@ -4,7 +4,7 @@
 
 - Twitter CONSUMER_KEY, CONSUMER_SECRET
 
-## Install
+## Install
 
 - git clone
 - cd into directory
